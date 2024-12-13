@@ -1,0 +1,163 @@
+from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
+from supabase import create_client, Client
+from nltk.sentiment import SentimentIntensityAnalyzer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, precision_score, recall_score, f1_score
+from datetime import datetime
+import nltk
+import json
+import numpy as np
+import nltk
+nltk.download('vader_lexicon')
+# Initialize Flask app
+app = Flask(__name__)
+CORS(app)  # Enable CORS for cross-origin requests
+
+# Supabase credentials (replace with your actual Supabase URL and Key)
+SUPABASE_URL = "https://kzyvfitsirkmhmqtzupb.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6eXZmaXRzaXJrbWhtcXR6dXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk4NDEyNjUsImV4cCI6MjA0NTQxNzI2NX0.m-Bn5OP0TBxT2BNuBXTwFj_QobyT3Sq6Dsdq6E424e8"
+# Initialize Supabase client
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# Initialize Sentiment Analyzers
+sia = SentimentIntensityAnalyzer()
+
+# Naive Bayes setup for aspect-based sentiment
+vectorizer = TfidfVectorizer(max_features=5000)  # Better feature representation
+classifier = MultinomialNB()
+
+# Train the Naive Bayes model without neutral class
+def train_naive_bayes():
+    nltk.download('movie_reviews')
+    from nltk.corpus import movie_reviews
+
+    # Get positive and negative samples
+    documents = [(list(movie_reviews.words(fileid)), category)
+                 for category in movie_reviews.categories()
+                 for fileid in movie_reviews.fileids(category)]
+
+    # Only include positive and negative samples (no neutral data)
+    train_data = [" ".join(words) for words, _ in documents]
+    train_labels = [label for _, label in documents if label != 'neu']  # Exclude neutral labels
+
+    # Train Naive Bayes model
+    train_features = vectorizer.fit_transform(train_data)
+    classifier.fit(train_features, train_labels)
+
+train_naive_bayes()
+
+# Evaluate the model without neutral class
+def evaluate_naive_bayes():
+    nltk.download('movie_reviews')
+    from nltk.corpus import movie_reviews
+
+    # Get positive and negative samples
+    documents = [(list(movie_reviews.words(fileid)), category)
+                 for category in movie_reviews.categories()
+                 for fileid in movie_reviews.fileids(category)]
+
+    # Only include positive and negative samples (no neutral data)
+    test_data = [" ".join(words) for words, _ in documents]
+    test_labels = [label for _, label in documents if label != 'neu']  # Exclude neutral labels
+
+    # Transform features and predict
+    test_features = vectorizer.transform(test_data)
+    predictions = classifier.predict(test_features)
+
+    # Generate evaluation metrics with only 'pos' and 'neg'
+    cm = confusion_matrix(test_labels, predictions, labels=['pos', 'neg'])
+    acc = accuracy_score(test_labels, predictions)
+    precision = precision_score(test_labels, predictions, average='weighted', zero_division=0)
+    recall = recall_score(test_labels, predictions, average='weighted', zero_division=0)
+    f1 = f1_score(test_labels, predictions, average='weighted', zero_division=0)
+
+    # Save metrics and confusion matrix to JSON
+    metrics = {
+        "confusion_matrix": cm.tolist(),
+        "accuracy": acc,
+        "precision": precision,
+        "recall": recall,
+        "f1_score": f1
+    }
+
+    with open("metrics.json", "w") as f:
+        json.dump(metrics, f)
+
+    print("Metrics saved to 'metrics.json'")
+    print(f"Confusion Matrix:\n{cm}")
+    print(classification_report(test_labels, predictions, target_names=['Positive', 'Negative']))
+
+evaluate_naive_bayes()  # Call the evaluation function
+
+# Endpoint to submit feedback and analyze sentiment
+@app.route('/submit_feedback', methods=['POST'])
+def submit_feedback():
+    event_feedback = request.json.get('event_feedback', '')
+    venue_feedback = request.json.get('venue_feedback', '')
+    catering_feedback = request.json.get('catering_feedback', '')
+    decoration_feedback = request.json.get('decoration_feedback', '')
+
+    # Analyze each aspect’s feedback
+    def analyze_sentiment(text):
+        sentiment = sia.polarity_scores(text)
+        compound = sentiment['compound']
+        if compound >= 0.2:  # Positive threshold
+            sentiment['label'] = 'pos'
+        elif compound <= -0.2:  # Negative threshold
+            sentiment['label'] = 'neg'
+        else:  # Instead of 'neu', classify as 'neg' or 'pos' if near threshold
+            sentiment['label'] = 'neg' if compound < 0 else 'pos'
+        return sentiment
+    
+    event_sentiment = analyze_sentiment(event_feedback)
+    venue_sentiment = analyze_sentiment(venue_feedback)
+    catering_sentiment = analyze_sentiment(catering_feedback)
+    decoration_sentiment = analyze_sentiment(decoration_feedback)
+
+    # Calculate overall sentiment based on individual aspect sentiments
+    overall_compound = (event_sentiment['compound'] + venue_sentiment['compound'] +
+                        catering_sentiment['compound'] + decoration_sentiment['compound']) / 4
+    overall_sentiment = 'pos' if overall_compound >= 0.2 else 'neg'  # No neutral sentiment anymore
+
+    feedback_data = {
+        "event_feedback": event_feedback,
+        "event_sentiment": event_sentiment,
+        "venue_feedback": venue_feedback,
+        "venue_sentiment": venue_sentiment,
+        "catering_feedback": catering_feedback,
+        "catering_sentiment": catering_sentiment,
+        "decoration_feedback": decoration_feedback,
+        "decoration_sentiment": decoration_sentiment,
+        "overall_sentiment": overall_sentiment,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+    # Store feedback data in Supabase 'feedback1' table
+    try:
+        response = supabase.table("feedback1").insert(feedback_data).execute()
+        return jsonify({"message": "Feedback submitted successfully", "data": response.data}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Endpoint to fetch stored feedback
+@app.route('/get_feedback', methods=['GET'])
+def get_feedback():
+    try:
+        response = supabase.table("feedback1").select("*").execute()
+        feedback_data = response.data
+        return jsonify(feedback_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# New endpoint to serve the metrics.json file
+@app.route('/download-metrics', methods=['GET'])
+def download_metrics():
+    try:
+        return send_file("metrics.json", as_attachment=True)
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

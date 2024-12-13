@@ -1,0 +1,36 @@
+Text,Sentiment,Source,Date/Time,User ID,Location,Confidence Score
+I love this product!,Positive,Twitter,2023-06-15 09:23:14,@user123,New York,0.85
+The service was terrible.,Negative,Yelp Reviews,2023-06-15 11:45:32,user456,Los Angeles,0.65
+This movie is amazing!,Positive,IMDb,2023-06-15 14:10:22,moviefan789,London,0.92
+I'm so disappointed with their customer support.,Negative,Online Forum,2023-06-15 17:35:11,forumuser1,Toronto,0.78
+Just had the best meal of my life!,Positive,TripAdvisor,2023-06-16 08:50:59,foodie22,Paris,0.88
+The quality of this product is subpar.,Negative,Amazon Reviews,2023-06-16 10:15:27,shopper123,San Francisco,0.72
+I can't stop listening to this song. It's incredible!,Positive,Spotify,2023-06-16 13:40:18,musiclover456,Berlin,0.91
+Their website is so user-friendly. Love it!,Positive,Website Testimonial,2023-06-16 16:05:36,testimonialuser1,Sydney,0.87
+I loved the movie! It was fantastic!,Positive,IMDb,2023-07-02 09:12:34,user123,New York,0.92
+The customer service was terrible.,Negative,Yelp Reviews,2023-07-02 10:45:21,user456,Los Angeles,0.65
+This book made me feel inspired. Highly recommended!,Positive,Goodreads,2023-07-02 12:34:56,bookworm789,London,0.88
+I'm extremely disappointed with their product quality.,Negative,Online Store,2023-07-02 15:21:43,shopper789,San Francisco,0.72
+Just had the most amazing vacation! I can't wait to go back.,Positive,TripAdvisor,2023-07-02 18:01:23,travelenthusiast1,Sydney,0.93
+The food at this restaurant was awful. Never going back again!,Negative,Zomato,2023-07-02 20:45:37,foodlover123,Mumbai,0.55
+I can't stop listening to this song. It's my new favorite!,Positive,Spotify,2023-07-03 09:17:52,musiclover789,Berlin,0.91
+Their website is so confusing and poorly designed.,Negative,Website Review,2023-07-03 11:59:18,user789,Toronto,0.68
+I had an incredible experience at the theme park. So much fun!,Positive,Trip Report,2023-07-03 14:40:05,thrillseeker1,Orlando,0.89
+The product arrived damaged. Very disappointed.,Negative,Online Store,2023-07-03 17:25:09,buyer123,Chicago,0.76
+The concert was absolutely breathtaking. Best performance ever!,Positive,Event Review,2023-07-03 20:15:33,musicfan456,Paris,0.95
+I had a terrible experience with their customer support.,Negative,Online Chat,2023-07-04 08:32:41,user1234,Sydney,0.61
+This movie is a masterpiece! I was blown away.,Positive,IMDb,2023-07-04 14:05:27,cinephile789,Los Angeles,0.93
+The customer service at this store is top-notch.,Positive,Yelp Reviews,2023-07-04 16:35:19,shopper456,New York,0.82
+I'm disappointed with the ending of this book. It fell flat.,Negative,Goodreads,2023-07-04 19:18:53,booklover123,London,0.68
+The product I received was damaged. Unacceptable.,Negative,Online Store,2023-07-04 21:52:41,buyer789,San Francisco,0.75
+Just had the worst flight experience. Delayed and rude staff.,Negative,Airline Review,2023-07-05 09:10:15,traveler456,Sydney,0.57
+The hotel stay was absolutely amazing! Luxury at its finest.,Positive,TripAdvisor,2023-07-05 12:30:08,traveladdict1,Paris,0.95
+The food at this restaurant was outstanding. Highly recommended!,Positive,Zomato,2023-07-05 15:45:32,foodie789,Mumbai,0.89
+This playlist is my go-to for workouts. Energizing and motivating!,Positive,Spotify,2023-07-05 18:20:17,gymrat123,Berlin,0.91
+I had a frustrating experience navigating through their website.,Negative,Website Review,2023-07-05 21:05:44,user987,Toronto,0.67
+The roller coaster ride was thrilling! Heart-pounding excitement!,Positive,Theme Park Review,2023-07-06 08:48:39,thrillseeker2,Orlando,0.92
+The product I ordered never arrived. Terrible service.,Negative,Online Store,2023-07-06 11:25:56,customer123,Chicago,0.64
+I can't get enough of this band. Their music is incredible!,Positive,Music Review,2023-07-06 14:15:23,musiclover987,London,0.94
+I had a great chat with their customer support. Helpful and friendly.,Positive,Online Chat,2023-07-06 17:02:11,user7890,Sydney,0.85
+This restaurant has the most delicious food. I can't wait to go back!,Positive,TripAdvisor,2023-07-09 09:12:54,foodie123,Paris,0.94
+The product I purchased broke within a week. Poor quality.,Negative,Online Store,2023-07-09 11:45:32,shopper246,Los Angeles,0.61

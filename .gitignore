@@ -1,0 +1,17 @@
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment folder
+venv/
+
+# Ignore environment variables file (if any)
+.env
+
+# Ignore IDE settings files (VS Code, PyCharm, etc.)
+.vscode/
+.idea/
+
+# Ignore system-specific files
+.DS_Store   # macOS
+*.swp       # Vim swap files

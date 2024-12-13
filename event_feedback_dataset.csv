@@ -1,0 +1,16 @@
+text,Sentiment
+The staff were rude and unhelpful. The event felt chaotic.,neg
+The staff were very friendly and professional. A great experience overall.,pos
+"The event was okay, nothing extraordinary. It was just another wedding.",neu
+The decorations were beautiful and added so much charm to the event.,pos
+"The food was average. Some liked it, some didn't.",neu
+"The decorations were decent, but nothing really stood out.",neu
+The venue was absolutely stunning. The view was breathtaking!,pos
+The decorations were uninspired and didn't match the theme at all.,neg
+The event went on as expected. It was neither bad nor great.,neu
+"The food was fantastic. Everyone loved it, especially the dessert!",pos
+The event was poorly organized. We had to wait for everything to start.,neg
+The venue was too small and cramped for the number of guests.,neg
+"The venue was fine, neither too good nor too bad.",neu
+The food was cold and tasteless. Many guests were unhappy with the meal.,neg
+"The event was very well organized, everything went smoothly.",pos
