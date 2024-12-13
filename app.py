@@ -9,6 +9,8 @@ from datetime import datetime
 import pandas as pd
 import json
 import numpy as np
+import nltk
+nltk.download('vader_lexicon')
 
 # Initialize Flask app
 app = Flask(__name__)
