@@ -435,7 +435,7 @@ def download_metrics():
     except Exception as e:
         return {"error": str(e)}, 500
 
-@app.route('/get_aspects_with_sentiments', methods=['GET']) 
+@app.route('/get_aspects_with_sentiments', methods=['GET'])
 def get_aspects_with_sentiments():
     event_id = request.args.get('event_id', None)  # Get event_id from the request
 
@@ -450,31 +450,31 @@ def get_aspects_with_sentiments():
         if not feedback_data:
             return jsonify({"error": "No feedback found for the given event ID"}), 404
 
-        # Initialize a dictionary to store sentiment counts and raw feedback data for all aspects
+        # Initialize dictionaries to store sentiment counts, raw feedback data, and sentiment analysis results
         aspects_sentiment_count = {}
         aspects_raw_feedback = {}
-        aspects_customer_info = {}
+        aspects_sentiment_data = {}
 
         # Iterate through the feedback data
         for feedback in feedback_data:
             for key, value in feedback.items():
                 # Check if the key represents an aspect's sentiment and if the field contains valid feedback
                 if "_sentiment" in key and isinstance(value, dict):
-                    aspect = key.replace("_sentiment", "")  # Extract aspect name (e.g., "service")
-                    
+                    aspect = key.replace("_sentiment", "")  # Extract aspect name (e.g., "food_catering")
+
                     # Skip aspects with empty/null feedback text
                     feedback_text_key = f"{aspect}_feedback"  # Assume feedback text key follows the pattern <aspect>_feedback
                     feedback_text = feedback.get(feedback_text_key)
                     if not feedback_text:  # If feedback text is missing or empty, skip this aspect
                         continue
-                    
+
                     sentiment = value.get("label", "").strip()
 
                     if sentiment:  # Only process if sentiment is not empty
                         if aspect not in aspects_sentiment_count:
                             aspects_sentiment_count[aspect] = {"positive": 0, "negative": 0, "neutral": 0}
                             aspects_raw_feedback[aspect] = []
-                            aspects_customer_info[aspect] = []
+                            aspects_sentiment_data[aspect] = []  # Initialize list for sentiment analysis data
 
                         # Update sentiment count for the aspect
                         if sentiment == "positive":
@@ -491,15 +491,26 @@ def get_aspects_with_sentiments():
                             "customer_id": feedback.get("customer_id")
                         })
 
-        # Return both sentiment counts and raw feedback data
+                        # Add sentiment analysis details (e.g., pos, neg, neu, compound)
+                        aspects_sentiment_data[aspect].append({
+                            "sentiment_label": sentiment,
+                            "compound": value.get("compound"),
+                            "positive_score": value.get("pos"),
+                            "neutral_score": value.get("neu"),
+                            "negative_score": value.get("neg")
+                        })
+
+        # Return both sentiment counts, raw feedback data, and sentiment analysis details
         return jsonify({
             "aspects_sentiment_count": aspects_sentiment_count,
-            "aspects_raw_feedback": aspects_raw_feedback
+            "aspects_raw_feedback": aspects_raw_feedback,
+            "aspects_sentiment_data": aspects_sentiment_data  # Include sentiment analysis data for each aspect
         }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-# Main Script Execution
+
+
 if __name__ == "__main__":
     normalize_sentiments("FlipkartProductReviewsWithSentimentDataset.csv")
     inspect_sentiment_distribution("FlipkartProductReviewsWithSentimentDataset.csv")
